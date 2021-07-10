@@ -1,9 +1,12 @@
 import express from "express"
+import { router } from './router'
 
 const app = express()
 
-app.get('/', (req, res) => {
-  return res.json({ message: 'Hello World' })
-})
+app.use(express.json())
+
+app.use(express.urlencoded({ extended: true }))
+
+app.use(router)
 
 app.listen(3333)
