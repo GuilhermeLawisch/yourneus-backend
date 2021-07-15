@@ -109,7 +109,10 @@ export class NewsController {
 
       const collection = db.collection('news')
 
-      await collection.updateOne({ id }, { $set: req.body })
+      await collection.updateOne({ id }, { $set: {
+        ...req.body,
+        updatedAt: new Date()
+      } })
 
       return res.status(200).json({ message: 'success' })
     } catch (err) {

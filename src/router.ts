@@ -40,5 +40,6 @@ router.delete('/news/:id', authMiddleware.verification, newsController.destroy)
 router.post('/user/register', userController.register)
 router.post('/user/auth', userController.authenticate)
 router.post('/user/data', authMiddleware.verification, userController.data)
+router.put('/user/update/:id', authMiddleware.verification, userController.update)
 
 export { router }

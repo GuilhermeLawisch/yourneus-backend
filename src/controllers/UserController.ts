@@ -11,7 +11,10 @@ type IUser = {
   username?: string;
   email?: string;
   password?: string;
+  token?: string;
+  avatar_url?: string;
   subscribedAt?: Date;
+  updatedAt?: Date;
 }
 
 export class UserController {
@@ -70,14 +73,17 @@ export class UserController {
       const token = sign({ id: user.id }, process.env.TOKEN_SECRET, {
         expiresIn: 60 * 60 * 1
       })
+
+      await collection.updateOne({ id: user.id }, { $set: {
+        token
+      }})
   
       return res.status(200).json({ user, token })
-
     } catch (err) {
       return res.status(200).json({ error: `unknown error: ${err}` })
     }
   }
-  async data(req, res:Response) {
+  async data(req:Request, res:Response) {
     const id = res.locals.id
 
     try {
@@ -94,6 +100,29 @@ export class UserController {
       return res.status(200).json(user)
     } catch (err) {
       return res.status(400).json({ error: `unknown error: ${err}` })
+    }
+  }
+  async update(req:Request, res:Response) {
+    const idHeader = res.locals.id
+    const idParams = req.params.id
+
+    try {
+      if (idHeader != idParams) {
+        return res.status(400).json({ error: `id error` })
+      }
+
+      const db = await connectToDatabase(process.env.MONGODB_URI)
+
+      const collection = db.collection('users')
+
+      await collection.updateOne({ id: idParams }, { $set: {
+        ...req.body,
+        updatedAt: new Date()
+      }})
+
+      return res.status(200).json({ message: `success` })
+    } catch (err) {
+      return res.status(400).json({ error: `unknown error ${err}` })
     }
   }
   async forgot_password(req:Request, res:Response) {
