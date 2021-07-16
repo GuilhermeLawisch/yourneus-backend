@@ -138,4 +138,40 @@ export class NewsController {
       return res.status(400).json({ error: `unknown error ${err}` })
     }
   }
+  async like(req:Request, res:Response) {
+    const idNews = req.params.id
+    const idUser = res.locals.id
+
+    try {
+      const db = await connectToDatabase(process.env.MONGODB_URI)
+
+      const collection = db.collection('news')
+
+      const news = await collection.findOne({ id: idNews })
+
+      if (!news) {
+        return res.status(400).json({ error: `id incorrect` })
+      }
+
+      let newsLikes = [
+        idUser
+      ]
+
+      for (let i = 0; i < news.likes.length; i++) {
+        if (news.likes[i] == idUser) {
+          return res.status(400).json({ message: `remove` })
+        } else {
+          newsLikes.push(news.likes[i])
+        }
+      }
+
+      await collection.updateOne({ id: idNews, idCreator: idUser }, { $set: { 
+        likes: newsLikes
+      } })
+
+      return res.status(200).json({ message: 'add' })
+    } catch (err) {
+      return res.status(400).json({ error: `unknown error ${err}` })
+    }
+  }
 }

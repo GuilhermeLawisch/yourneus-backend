@@ -67,7 +67,7 @@ export class UserController {
       const user: IUser = await collection.findOne({ email })
 
       if (!await compare(password, user.password)) {
-        return res.status(400).send({ error: "Invalid password" })
+        return res.status(400).json({ error: "Invalid password" })
       }
 
       const token = sign({ id: user.id }, process.env.TOKEN_SECRET, {
@@ -115,8 +115,11 @@ export class UserController {
 
       const collection = db.collection('users')
 
+      const passwordHash = await hash(req.body.password, 10)
+
       await collection.updateOne({ id: idParams }, { $set: {
         ...req.body,
+        password: passwordHash,
         updatedAt: new Date()
       }})
 

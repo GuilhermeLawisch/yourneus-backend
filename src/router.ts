@@ -35,6 +35,7 @@ router.get('/news/:id', newsController.show)
 router.get('/news/edit/:id', authMiddleware.verification, newsController.edit)
 router.put('/news/:id', authMiddleware.verification, newsController.update)
 router.delete('/news/:id', authMiddleware.verification, newsController.destroy)
+router.get('/news/like/:id', authMiddleware.verification, newsController.like)
 
 // USER DATA
 router.post('/user/register', userController.register)
