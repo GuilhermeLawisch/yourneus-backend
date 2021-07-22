@@ -1,7 +1,7 @@
 import express from "express";
 require('dotenv/config');
 
-import { AuthMiddleware } from './middlewares/auth'
+import { AuthMiddleware } from './middlewares/AuthMiddleware'
 
 import { UserController } from './controllers/UserController'
 import { NewsController } from "./controllers/NewsController";
@@ -32,6 +32,7 @@ router.use(function (req, res, next) {
 router.get('/news', newsController.index)
 router.post('/news/create', authMiddleware.verification, newsController.create)
 router.get('/news/:id', newsController.show)
+router.get('/news/search/:id', newsController.search)
 router.get('/news/edit/:id', authMiddleware.verification, newsController.edit)
 router.put('/news/:id', authMiddleware.verification, newsController.update)
 router.delete('/news/:id', authMiddleware.verification, newsController.destroy)

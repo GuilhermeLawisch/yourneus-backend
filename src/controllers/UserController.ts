@@ -80,7 +80,7 @@ export class UserController {
   
       return res.status(200).json({ user, token })
     } catch (err) {
-      return res.status(200).json({ error: `unknown error: ${err}` })
+      return res.status(400).json({ error: `unknown error: ${err}` })
     }
   }
   async data(req:Request, res:Response) {

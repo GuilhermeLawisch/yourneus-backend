@@ -24,7 +24,7 @@ export class NewsController {
 
       const collection = db.collection('news')
 
-      collection.find({}).toArray(function(err, result) {
+      collection.find({}).sort({_id:-1}) .toArray(function(err, result) {
         if (err) throw err;
         return res.status(200).json(result)
       })
@@ -82,6 +82,22 @@ export class NewsController {
 
     } catch (err) {
       return res.status(400).json({ error: `unknown error ${err}` })
+    }
+  }
+  async search(req:Request, res:Response) {
+    const value = req.params.id
+  
+    try {
+      const db = await connectToDatabase(process.env.MONGODB_URI)
+
+      const collection = db.collection('news')
+
+      collection.find({ title: {'$regex': value, '$options': 'i'} }).sort({_id:-1}) .toArray(function(err, result) {
+        if (err) throw err;
+        return res.status(200).json(result)
+      })
+    } catch (err) {
+      return res.status(400)
     }
   }
   async edit(req:Request, res:Response) {
@@ -153,21 +169,28 @@ export class NewsController {
         return res.status(400).json({ error: `id incorrect` })
       }
 
-      let newsLikes = [
-        idUser
-      ]
+      let newsLikes = []
+      let exists = false
 
       for (let i = 0; i < news.likes.length; i++) {
         if (news.likes[i] == idUser) {
-          return res.status(400).json({ message: `remove` })
+          exists = true
         } else {
           newsLikes.push(news.likes[i])
         }
       }
 
-      await collection.updateOne({ id: idNews, idCreator: idUser }, { $set: { 
+      if (!exists) {
+        newsLikes.push(idUser)
+      }
+
+      await collection.updateOne({ id: idNews }, { $set: { 
         likes: newsLikes
       } })
+
+      if (exists) {
+        return res.status(400).json({ message: `remove` })
+      }
 
       return res.status(200).json({ message: 'add' })
     } catch (err) {

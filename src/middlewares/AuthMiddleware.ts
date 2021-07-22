@@ -8,24 +8,30 @@ export class AuthMiddleware {
     // EXAMPLE: Bearer hdfs15gn49unp9iup847htgp98gt4
     const authHeader = req.headers['authorization']
 
+    console.log(req.headers)
+
     if (!authHeader) {
+      console.log('No token provided')
       return res.status(401).send({ error: 'No token provided' })
     }
 
     const parts = authHeader.split(' ')
 
     if (parts.length !== 2) {
+      console.log('Token error')
       return res.status(401).send({ error: 'Token error' })
     }
 
     const [ scheme, token ] = parts;
 
     if (!/Bearer$/i.test(scheme)) {
+      console.log('Token malformated')
       return res.status(401).send({ error: 'Token malformated' })
     }
 
     verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
       if (err) {
+        console.log('Token invalid')
         return res.status(401).send({ error: 'Token invalid' })
       }
 
