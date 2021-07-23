@@ -96,8 +96,6 @@ export class NewsController {
         if (err) throw err;
         return res.status(200).json(result)
       })
-
-      return res.status(400)
     } catch (err) {
       return res.status(400)
     }
