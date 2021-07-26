@@ -197,4 +197,22 @@ export class NewsController {
       return res.status(400).json({ error: `unknown error ${err}` })
     }
   }
+  async file(req:Request, res:Response) {
+    const id = res.locals.id
+
+    try {
+      const db = await connectToDatabase(process.env.MONGODB_URI)
+
+      const collection = db.collection('news')
+
+      await collection.updateOne({ id }, { $set: {
+        ...req.body,
+        updatedAt: new Date()
+      } })
+
+      return res.status(200).json({ message: 'success' })
+    } catch (err) {
+      res.status(400).json({ error: `Unknown error ${err}` })
+    }
+  }
 }
