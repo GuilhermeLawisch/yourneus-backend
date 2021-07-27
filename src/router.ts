@@ -13,26 +13,24 @@ import { NewsController } from "./controllers/NewsController";
 const router = express.Router()
 
 let key
-
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.resolve(__dirname, 'tmp', 'uploads'))
-  },
-  filename: function (req, file, cb) {
-    // cb(null, file.fieldname + '-' + Date.now() + '.jpg')
-    crypto.randomBytes(16, (err, hash) => {
-      if (err) cb(err, null);
-
-      key = `${hash.toString("hex")}-${file.originalname}`;
-
-      cb(null, key);
-    });
-  }
-})
- 
-var upload = multer({ 
+  
+const upload = multer({ 
   dest: path.resolve(__dirname, 'tmp', 'uploads'),
-  storage: storage,
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, path.resolve(__dirname, 'tmp', 'uploads'))
+    },
+    filename: function (req, file, cb) {
+      // cb(null, file.fieldname + '-' + Date.now() + '.jpg')
+      crypto.randomBytes(16, (err, hash) => {
+        if (err) cb(err, null);
+  
+        key = `${hash.toString("hex")}-${file.originalname}`;
+  
+        cb(null, key);
+      });
+    }
+  }),
   limits: {
     fileSize: 2 * 1024 * 1024
   },
